@@ -1,0 +1,32 @@
+# compilation and distribution
+__pycache__
+_ext
+*.pyc
+*.so
+experiments/logs
+experiments/DPED_*
+
+
+# pytorch/python/numpy formats
+*.pth
+*.pkl
+*.npy
+
+# ipython/jupyter notebooks
+*.ipynb
+**/.ipynb_checkpoints/
+
+# Editor temporaries
+*.swn
+*.swo
+*.swp
+*~
+
+# Pycharm editor settings
+.idea
+.vscode
+*.egg
+
+# project dirs
+data/dped
+data/pretrain_models
