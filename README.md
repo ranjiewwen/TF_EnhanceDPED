@@ -1,4 +1,3 @@
-
 ## TF_EnhanceDPED project
 
 - tensorflow implement of image enhancement base on dped .
@@ -20,3 +19,4 @@
 ### up to optimization
 
 - ps:训练是将一部分数据读入内存进行训练，每训练一定次数可以重新导入一部分数据加载到内存里;
+
