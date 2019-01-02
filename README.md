@@ -1,22 +1,82 @@
 ## TF_EnhanceDPED project
 
-- tensorflow implement of image enhancement base on dped .
+- Tensorflow implement of image enhancement base on dped.
+- First reimplementation of ICCV 2017 paper "[DSLR-Quality Photos on Mobile Devices with Deep Convolutional Networks](https://arxiv.org/pdf/1704.02470.pdf)" .
+- Second will modify the generate network and loss to make the image enhancement result better. 
 
-### dirctory introduction
+### Prerequisites
 
-- models文件里存储训练保存的模型，两个子文件分别保存训练和验证过程的event文件，可以通过命令tensorboard --lodir "models/"对训练和验证的参数进行可视化;
-- results文件保存验证过程中生成图像和目标图像的对比图;
-- net,data,loss分别为网络，数据导入和损失定义的文件夹。vgg_pretrained放置训练好的vgg模型，metrics放置输出评价指标函数（如psnr,ssim);
+- Python + scipy, numpy packages
+- TensorFlow (>=1.0.1) + CUDA CuDNN
+- Nvidia GPU
 
-### congfig
+### File tree
 
-- 配置文件在experiments里面的config文件里;
+```bash
+├── data
+│   ├── dped -> /home/***/datasets/dped/
+│   ├── __init__.py
+│   ├── load_dataset.py
+│   └── pretrain_models
+├── demo
+├── experiments
+│   ├── config.py
+│   ├── DPED_model_20190101-19:25
+│   └── logs
+├── loss
+│   ├── GAN_loss.py
+│   ├── __init__.py
+│   ├── other_loss.py
+│   └── vgg_loss.py
+├── metrics
+│   ├── __init__.py
+│   ├── psnr.py
+│   └── ssim.py
+├── net
+│   ├── __init__.py
+│   └── resnet.py
+├── README.md
+├── tools
+│   ├── inference.py
+│   └── train.py
+└── utils
+    ├── __init__.py
+    ├── logger.py
+    └── utils.py
 
-### tain
+```
 
-- 点击tool文件下的train文件即可训练;
+- Refactored file structure is easy to expand.
+- Net, data, loss, metrics are folders for network, data import, loss definition and metrics respectively.
+- Demo, utils folder is used to provide some visualization, helper function folder.
+- `experiments/config` will provide the parameter parse, you can modify the hyperparameter from this file.
+- The DPED_* folder is automatically generated for each experiment, which stores the checkpoint file and the visually enhanced patch image.
+- The `experiments/logs/` folder saves the event files in the training and validation phases, which can be visualized by commands `tensorboard --lodir logs`.
 
-### up to optimization
 
-- ps:训练是将一部分数据读入内存进行训练，每训练一定次数可以重新导入一部分数据加载到内存里;
+### First steps congfig
+
+- Download the pre-trained VGG-19 model and put it into pretrain_models/ folder.
+    - It should use the weight provided by the author, when use the matconvnet offical weight it will get error.
+- Download DPED dataset (patches for CNN training) and extract it into dped/ folder.
+    - This folder should contain three subolders: sony/, iphone/ and blackberry/
+
+- Modify the config configuration file in the experiments.
+
+### Tain
+
+- Use this command to trian the models `python tools/train.py --<parameter>`.
+
+### Coming soon optimization
+
+- Training is to read a part of the data into the memory for training. Each training can re-import a part of the data and load it into the memory.
+- So each training load the data is very slow, next step will optimization. 
+- Will use Moving average loss.
+
+### Thanks
+
+- 2019/01/02 init the repository.
+- Thanks offical code [DPED](https://github.com/aiff22/DPED) !
+
+
 
