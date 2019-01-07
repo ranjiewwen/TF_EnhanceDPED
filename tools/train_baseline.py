@@ -12,18 +12,15 @@ from scipy import misc
 import os
 import numpy as np
 import sys
-import logging
 import time
-from datetime import datetime
 
-from experiments import DPED_2019_01_07_config as config
+from experiments.config import DPED_2019_01_07_config as config
 from data.load_dataset import load_test_data, load_batch
 
 from net import resnet
 from loss import color_loss,content_loss,variation_loss,texture_loss
 from metrics import MultiScaleSSIM,PSNR
 from utils.logger import setup_logger
-
 
 np.random.seed(0)
 def main(args):
@@ -202,7 +199,7 @@ def main(args):
                 train_data, train_answ = load_batch(args.dataset, args.dataset_dir, args.train_size, args.patch_size)
                 
                 iter_end=time.time()
-                logging.info('current eval_step:{}/{}, take train time is :{}'.format(i,args.eval_step,iter_end-iter_start))
+                logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i,args.eval_step,float(iter_end-iter_start)/60))
 
             if KeyboardInterrupt:
                 saver.save(sess, args.checkpoint_dir  +'/'+ str(args.dataset) + '_iteration_' +  str(i) + '.ckpt', write_meta_graph=False)
@@ -228,4 +225,4 @@ if __name__=='__main__':
     start=time.time()
     main(args)
     end=time.time()
-    logging.info('total train time is :{}'.format(end-start))
+    logger.info('total train time is :{}'.format(end-start))

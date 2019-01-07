@@ -61,3 +61,17 @@ def content_loss(vgg_dir,enhanced,dslr_image,batch_size):
     content_size = utils._tensor_size(dslr_vgg[CONTENT_LAYER]) * batch_size
     loss_content = 2 * tf.nn.l2_loss(enhanced_vgg[CONTENT_LAYER] - dslr_vgg[CONTENT_LAYER]) / content_size
     return loss_content
+
+def multi_content_loss(vgg_dir,enhanced,dslr_image,batch_size):
+
+    CONTENT_LAYER = ['relu1_2','relu3_4','relu5_4']
+    enhanced_vgg = net(vgg_dir, preprocess(enhanced * 255))
+    dslr_vgg = net(vgg_dir, preprocess(dslr_image * 255))
+
+    multi_content_loss=0.0
+    for i in range(len(CONTENT_LAYER)):
+        content_size = utils._tensor_size(dslr_vgg[CONTENT_LAYER[i]]) * batch_size
+        loss_content = 2 * tf.nn.l2_loss(enhanced_vgg[CONTENT_LAYER[i]] - dslr_vgg[CONTENT_LAYER[i]]) / content_size
+        multi_content_loss+=loss_content
+
+    return multi_content_loss/1000

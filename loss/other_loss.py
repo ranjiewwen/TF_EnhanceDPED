@@ -2,8 +2,11 @@ import tensorflow as tf
 import utils.utils as utils
 
 def color_loss(enhanced, dslr_image, batch_size):
-    enhanced_blur = utils.blur(enhanced)
-    dslr_blur = utils.blur(dslr_image)
+
+    # enhanced_blur = utils.blur(enhanced)
+    # dslr_blur = utils.blur(dslr_image)
+    dslr_blur=dslr_image
+    enhanced_blur=enhanced
 
     loss_color = tf.reduce_sum(tf.pow(dslr_blur - enhanced_blur, 2)) / (2 * batch_size)
     return loss_color
