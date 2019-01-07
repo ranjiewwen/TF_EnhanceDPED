@@ -12,18 +12,15 @@ from scipy import misc
 import os
 import numpy as np
 import sys
-import logging
 import time
-from datetime import datetime
 
-from experiments import config
+from experiments.config import DPED_2019_01_07_config as config
 from data.load_dataset import load_test_data, load_batch
 
 from net import resnet
 from loss import color_loss,content_loss,variation_loss,texture_loss
 from metrics import MultiScaleSSIM,PSNR
 from utils.logger import setup_logger
-
 
 np.random.seed(0)
 def main(args):
@@ -52,6 +49,10 @@ def main(args):
 
         adv_ = tf.placeholder(tf.float32, [None, 1])
         enhanced = resnet(phone_image)
+
+        # # learning rate exponential_decay
+        # global_step = tf.Variable(0)
+        # learning_rate = tf.train.exponential_decay(args.learning_rate, global_step, decay_steps=args.train_size / args.batch_size, decay_rate=0.98, staircase=True)
 
         # loss introduce
         loss_texture, discim_accuracy = texture_loss(enhanced, dslr_image, args.patch_width, args.patch_height, adv_)
@@ -97,12 +98,16 @@ def main(args):
         tf.global_variables_initializer().run()
 
         ckpt = tf.train.get_checkpoint_state(args.checkpoint_dir)
+        start_i=0
         if ckpt and ckpt.model_checkpoint_path:
             logger.info('loading checkpoint:'+ckpt.model_checkpoint_path)
             saver.restore(sess, ckpt.model_checkpoint_path)
+            import re
+            start_i=int(re.findall("_(\d+).ckpt",ckpt.model_checkpoint_path)[0])
 
-        for i in range(args.iter_max):
-
+        for i in range(start_i,args.iter_max):
+            
+            iter_start=time.time()
             # train generator
             idx_train = np.random.randint(0, args.train_size, args.batch_size)
             phone_images = train_data[idx_train]
@@ -119,7 +124,7 @@ def main(args):
 
             phone_images = train_data[idx_train]
             dslr_images = train_answ[idx_train]
-
+            # sess.run(train_step_disc)=train_step_disc.compute_gradients(loss,var)+train_step_disc.apply_gradients(var) @20190105
             [accuracy_temp, temp] = sess.run([discim_accuracy, train_step_disc],feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: swaps})
             train_acc_discrim += accuracy_temp / args.eval_step
 
@@ -192,18 +197,22 @@ def main(args):
                 del test_answ
                 test_data, test_answ = load_test_data(args.dataset, args.dataset_dir, args.test_size, args.patch_size)
                 train_data, train_answ = load_batch(args.dataset, args.dataset_dir, args.train_size, args.patch_size)
+                
+                iter_end=time.time()
+                logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i,args.eval_step,float(iter_end-iter_start)/60))
 
             if KeyboardInterrupt:
-                saver.save(sess, args.checkpoint_dir  +'/'+ str(args.dataset) + '_iteration_' + 'on' + '.ckpt', write_meta_graph=False)
-
+                saver.save(sess, args.checkpoint_dir  +'/'+ str(args.dataset) + '_iteration_' +  str(i) + '.ckpt', write_meta_graph=False)
+   
 
 
 if __name__=='__main__':
 
     args=config.process_command_args(sys.argv[1:])
-    timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d-%H_%M') # windows not use ":" in path
-    args.exp_name=args.exp_name+timestamp
-    args.exp_name="DPED_model_20190107-10_39"
+    # timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d-%H:%M')
+    # args.exp_name=args.exp_name+timestamp
+    # args.exp_name="DPED_model_20190101-19:25"
+
     args.checkpoint_dir=args.checkpoint_dir+str(args.exp_name)
     if not os.path.isdir(args.checkpoint_dir):
         os.makedirs(args.checkpoint_dir)
@@ -217,4 +226,4 @@ if __name__=='__main__':
     start=time.time()
     main(args)
     end=time.time()
-    logging.info('total train time is :{}'.format(end-start))
+    logger.info('total train time is :{}'.format(end-start))

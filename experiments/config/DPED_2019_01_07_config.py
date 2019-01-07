@@ -11,6 +11,8 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Unsupported value encountered.')
 
+experiment_name = os.path.splitext(__file__.split('/')[-1])[0]
+BASE_DATA_PATH="F:\\ranjiewen\\dped\\"
 # specifying default parameters
 def process_command_args(arguments):
 
@@ -20,11 +22,17 @@ def process_command_args(arguments):
     parser = argparse.ArgumentParser(description="Tensorflow Image Enhancement DPED Dataset Training")
 
     ## Path related arguments
-    parser.add_argument('--exp_name',type=str,default='DPED_model_',help='experiment name')
-    parser.add_argument('--dataset_dir',type=str,default="F:\\ranjiewen\\dped\\",help='the root path of dataset')
+    parser.add_argument('--exp_name', type=str, default=experiment_name, help='experiment name')
+    parser.add_argument('--dataset_dir',type=str,default=BASE_DATA_PATH,help='the root path of dataset')
     parser.add_argument('--checkpoint_dir',type=str,default=os.path.abspath('..')+"\\experiments\\",help='the path of ckpt file')
     parser.add_argument('--tesorboard_logs_dir',type=str,default=os.path.abspath('..')+"\\experiments\\logs\\",help='the path of tensorboard logs') #'/experiments/logs/'
     parser.add_argument('--pretrain_weights',type=str,default=os.path.abspath('..')+"\\data\\pretrain_models\\"+'imagenet-vgg-verydeep-19.mat')
+
+    # parser.add_argument('--exp_name',type=str,default=experiment_name,help='experiment name')
+    # parser.add_argument('--dataset_dir',type=str,default=BASE_DATA_PATH+'/dped/',help='the root path of dataset')
+    # parser.add_argument('--checkpoint_dir',type=str,default=os.path.abspath('..')+'/experiments/',help='the path of ckpt file')
+    # parser.add_argument('--tesorboard_logs_dir',type=str,default=os.path.abspath('..')+'/experiments/logs/',help='the path of tensorboard logs')
+    # parser.add_argument('--pretrain_weights',type=str,default=os.path.abspath('..')+'/data/pretrain_models/'+'imagenet-vgg-verydeep-19.mat')
 
     ## models retated argumentss
     parser.add_argument('--save_visual_result',type=str2bool,default=False, help="whether to save visual result file ")
@@ -40,18 +48,18 @@ def process_command_args(arguments):
 
     ## train related arguments
     parser.add_argument('--batch_size',type=int,default=32)
-    parser.add_argument('--train_size',type=int,default=3000) # 3000
+    parser.add_argument('--train_size',type=int,default=300) # 3000
     parser.add_argument('--test_size',type=int,default=300)  # 300
     parser.add_argument('--w_content',type=float,default=10)
     parser.add_argument('--w_color',type=float,default=0.5)
-    parser.add_argument('--w_texture',type=float,default=3)
+    parser.add_argument('--w_texture',type=float,default=2)
     parser.add_argument('--w_tv',type=float,default=2000)
-    parser.add_argument('--eval_step',type=int,default=1000) #1000
+    parser.add_argument('--eval_step',type=int,default=1) #1000
     parser.add_argument('--summary_step',type=int,default=2)
 
     ## optimization related arguments
     parser.add_argument('--learning_rate',type=float,default=5e-4,help='init learning rate')
-    parser.add_argument('--iter_max',type=int,default=120000,help='the maxinum of iteration')   #200000
+    parser.add_argument('--iter_max',type=int,default=120000,help='the maxinum of iteration')
     parser.add_argument('--momentum', type=float, default=0.9)
     parser.add_argument('--weight_decay', type=float, default=4e-5)
 
