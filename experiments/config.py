@@ -21,13 +21,13 @@ def process_command_args(arguments):
 
     ## Path related arguments
     parser.add_argument('--exp_name',type=str,default='DPED_model_',help='experiment name')
-    parser.add_argument('--dataset_dir',type=str,default=os.path.abspath('..')+'/data/dped/',help='the root path of dataset')
-    parser.add_argument('--checkpoint_dir',type=str,default=os.path.abspath('..')+'/experiments/',help='the path of ckpt file')
-    parser.add_argument('--tesorboard_logs_dir',type=str,default=os.path.abspath('..')+'/experiments/logs/',help='the path of tensorboard logs')
-    parser.add_argument('--pretrain_weights',type=str,default=os.path.abspath('..')+'/data/pretrain_models/'+'imagenet-vgg-verydeep-19.mat')
+    parser.add_argument('--dataset_dir',type=str,default="F:\\ranjiewen\\dped\\",help='the root path of dataset')
+    parser.add_argument('--checkpoint_dir',type=str,default=os.path.abspath('..')+"\\experiments\\",help='the path of ckpt file')
+    parser.add_argument('--tesorboard_logs_dir',type=str,default=os.path.abspath('..')+"\\experiments\\logs\\",help='the path of tensorboard logs') #'/experiments/logs/'
+    parser.add_argument('--pretrain_weights',type=str,default=os.path.abspath('..')+"\\data\\pretrain_models\\"+'imagenet-vgg-verydeep-19.mat')
 
     ## models retated argumentss
-    parser.add_argument('--save_visual_result',type=str2bool,default=True, help="whether to save visual result file ")
+    parser.add_argument('--save_visual_result',type=str2bool,default=False, help="whether to save visual result file ")
     parser.add_argument('--save_ckpt_file', type=str2bool, default=True,
                         help="whether to save trained checkpoint file ")
     parser.add_argument('--split', type=str, default='train',help="choose from train/val/test/trainval")
@@ -44,7 +44,7 @@ def process_command_args(arguments):
     parser.add_argument('--test_size',type=int,default=300)  # 300
     parser.add_argument('--w_content',type=float,default=10)
     parser.add_argument('--w_color',type=float,default=0.5)
-    parser.add_argument('--w_texture',type=float,default=1)
+    parser.add_argument('--w_texture',type=float,default=3)
     parser.add_argument('--w_tv',type=float,default=2000)
     parser.add_argument('--eval_step',type=int,default=1000) #1000
     parser.add_argument('--summary_step',type=int,default=2)

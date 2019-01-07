@@ -98,7 +98,7 @@ def main(args):
 
         ckpt = tf.train.get_checkpoint_state(args.checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
-            logger.info('loading checkpoint...')
+            logger.info('loading checkpoint:'+ckpt.model_checkpoint_path)
             saver.restore(sess, ckpt.model_checkpoint_path)
 
         for i in range(args.iter_max):
@@ -201,8 +201,9 @@ def main(args):
 if __name__=='__main__':
 
     args=config.process_command_args(sys.argv[1:])
-    timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d-%H:%M')
+    timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d-%H_%M') # windows not use ":" in path
     args.exp_name=args.exp_name+timestamp
+    args.exp_name="DPED_model_20190107-10_39"
     args.checkpoint_dir=args.checkpoint_dir+str(args.exp_name)
     if not os.path.isdir(args.checkpoint_dir):
         os.makedirs(args.checkpoint_dir)
@@ -210,7 +211,7 @@ if __name__=='__main__':
         os.makedirs(args.tesorboard_logs_dir)
 
     output_dir=args.checkpoint_dir
-    logger = setup_logger("maskrcnn_benchmark", output_dir)
+    logger = setup_logger("TF_EnhanceDPED_benchmark", output_dir)
 
     logger.info(args)
     start=time.time()
