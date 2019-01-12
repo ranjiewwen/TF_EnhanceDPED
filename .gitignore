@@ -29,4 +29,4 @@ experiments/DPED_*
 
 # project dirs
 data/dped
-data/pretrain_models
+data/vgg_models
