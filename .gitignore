@@ -4,7 +4,7 @@ _ext
 *.pyc
 *.so
 experiments/logs
-experiments/DPED_*
+experiments/dped_*
 
 
 # pytorch/python/numpy formats
@@ -29,4 +29,7 @@ experiments/DPED_*
 
 # project dirs
 data/dped
-data/pretrain_models
+data/vgg_models
+ai_challenge/dped
+ai_challenge/models_converted
+ai_challenge/models_pretrained

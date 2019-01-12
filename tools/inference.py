@@ -7,7 +7,7 @@ from net import resnet
 from utils import utils
 import os
 import sys
-from experiments import config
+from experiments.config import DPED_2019_01_07_config as config
 
 # process command arguments
 phone, dped_dir, test_subset, iteration, resolution, use_gpu = config.process_test_model_args(sys.argv)

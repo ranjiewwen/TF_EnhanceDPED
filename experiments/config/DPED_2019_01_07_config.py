@@ -26,13 +26,13 @@ def process_command_args(arguments):
     parser.add_argument('--dataset_dir',type=str,default=BASE_DATA_PATH,help='the root path of dataset')
     parser.add_argument('--checkpoint_dir',type=str,default=os.path.abspath('..')+"\\experiments\\",help='the path of ckpt file')
     parser.add_argument('--tesorboard_logs_dir',type=str,default=os.path.abspath('..')+"\\experiments\\logs\\",help='the path of tensorboard logs') #'/experiments/logs/'
-    parser.add_argument('--pretrain_weights',type=str,default=os.path.abspath('..')+"\\data\\pretrain_models\\"+'imagenet-vgg-verydeep-19.mat')
+    parser.add_argument('--pretrain_weights',type=str,default=os.path.abspath('..')+"\\data\\vgg_models\\"+'imagenet-vgg-verydeep-19.mat')
 
     # parser.add_argument('--exp_name',type=str,default=experiment_name,help='experiment name')
     # parser.add_argument('--dataset_dir',type=str,default=BASE_DATA_PATH+'/dped/',help='the root path of dataset')
     # parser.add_argument('--checkpoint_dir',type=str,default=os.path.abspath('..')+'/experiments/',help='the path of ckpt file')
     # parser.add_argument('--tesorboard_logs_dir',type=str,default=os.path.abspath('..')+'/experiments/logs/',help='the path of tensorboard logs')
-    # parser.add_argument('--pretrain_weights',type=str,default=os.path.abspath('..')+'/data/pretrain_models/'+'imagenet-vgg-verydeep-19.mat')
+    # parser.add_argument('--pretrain_weights',type=str,default=os.path.abspath('..')+'/data/vgg_models/'+'imagenet-vgg-verydeep-19.mat')
 
     ## models retated argumentss
     parser.add_argument('--save_visual_result',type=str2bool,default=False, help="whether to save visual result file ")
@@ -69,8 +69,8 @@ def process_command_args(arguments):
 
 def process_test_model_args(arguments):
 
-    phone = ""
-    dped_dir = 'dped/'
+    phone = "iphone"
+    dped_dir = BASE_DATA_PATH
     test_subset = "small"
     iteration = "all"
     resolution = "orig"

@@ -67,6 +67,10 @@
 
 - Use this command to trian the models `python tools/train.py --<parameter>`.
 
+### Test
+
+- [aiff22/ai-challenge](https://github.com/aiff22/ai-challenge)
+
 ### Coming soon optimization
 
 - Training is to read a part of the data into the memory for training. Each training can re-import a part of the data and load it into the memory.
