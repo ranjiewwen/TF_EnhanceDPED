@@ -11,8 +11,12 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Unsupported value encountered.')
 
-experiment_name = os.path.splitext(__file__.split('/')[-1])[0]
+experiment_name = os.path.splitext(__file__.split('\\')[-1])[0]
 BASE_DATA_PATH="F:\\ranjiewen\\dped\\"
+
+# experiment_name = os.path.splitext(__file__.split('/')[-1])[0]
+# BASE_DATA_PATH="F:\\ranjiewen\\dped\\"
+
 # specifying default parameters
 def process_command_args(arguments):
 
@@ -48,18 +52,18 @@ def process_command_args(arguments):
 
     ## train related arguments
     parser.add_argument('--batch_size',type=int,default=32)
-    parser.add_argument('--train_size',type=int,default=300) # 3000
+    parser.add_argument('--train_size',type=int,default=3000) # 3000
     parser.add_argument('--test_size',type=int,default=300)  # 300
     parser.add_argument('--w_content',type=float,default=10)
     parser.add_argument('--w_color',type=float,default=0.5)
     parser.add_argument('--w_texture',type=float,default=2)
     parser.add_argument('--w_tv',type=float,default=2000)
-    parser.add_argument('--eval_step',type=int,default=1) #1000
+    parser.add_argument('--eval_step',type=int,default=1000) #1000
     parser.add_argument('--summary_step',type=int,default=2)
 
     ## optimization related arguments
     parser.add_argument('--learning_rate',type=float,default=5e-4,help='init learning rate')
-    parser.add_argument('--iter_max',type=int,default=120000,help='the maxinum of iteration')
+    parser.add_argument('--iter_max',type=int,default=96000,help='the maxinum of iteration')
     parser.add_argument('--momentum', type=float, default=0.9)
     parser.add_argument('--weight_decay', type=float, default=4e-5)
 

@@ -14,10 +14,10 @@ import numpy as np
 import sys
 import time
 
-from experiments.config import DPED_2019_01_07_config as config
+from experiments.config import config_dped_20190107 as config
 from data.load_dataset import load_test_data, load_batch
 
-from net import resnet, unet, xUnit_res
+from net import unet, xUnit_res
 from loss import color_loss, content_loss, variation_loss, texture_loss,multi_content_loss
 from metrics import MultiScaleSSIM, PSNR
 from utils.logger import setup_logger
@@ -49,7 +49,7 @@ def main(args):
         dslr_image = tf.reshape(dslr_, [-1, args.patch_height, args.patch_width, 3])
 
         adv_ = tf.placeholder(tf.float32, [None, 1])
-        enhanced = resnet(phone_image)
+        enhanced = unet(phone_image)
 
         # # learning rate exponential_decay
         # global_step = tf.Variable(0)

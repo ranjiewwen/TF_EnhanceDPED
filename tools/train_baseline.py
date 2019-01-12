@@ -14,7 +14,7 @@ import numpy as np
 import sys
 import time
 
-from experiments.config import DPED_2019_01_07_config as config
+from experiments.config import config_dped_20190107 as config
 from data.load_dataset import load_test_data, load_batch
 
 from net import resnet
@@ -93,8 +93,8 @@ def main(args):
         tf.summary.scalar('ssim', loss_ssim),
         tf.summary.scalar('learning_rate', args.learning_rate),
         merge_summary = tf.summary.merge_all()
-        train_writer = tf.summary.FileWriter(args.tesorboard_logs_dir + '/train', sess.graph,filename_suffix=args.exp_name)
-        test_writer = tf.summary.FileWriter(args.tesorboard_logs_dir + '/test', sess.graph,filename_suffix=args.exp_name)
+        train_writer = tf.summary.FileWriter(args.tesorboard_logs_dir + 'train', sess.graph,filename_suffix=args.exp_name)
+        test_writer = tf.summary.FileWriter(args.tesorboard_logs_dir + 'test', sess.graph,filename_suffix=args.exp_name)
         tf.global_variables_initializer().run()
 
         ckpt = tf.train.get_checkpoint_state(args.checkpoint_dir)
@@ -179,14 +179,14 @@ def main(args):
                         before_after = np.hstack(
                             (np.reshape(test_crops[idx], [args.patch_height, args.patch_width, 3]), crop))
                         misc.imsave(
-                            args.checkpoint_dir + '/' + str(args.dataset) + "_" + str(idx) + '_iteration_' + str(
+                            args.checkpoint_dir + '\\' + str(args.dataset) + "_" + str(idx) + '_iteration_' + str(
                                 i) + '.jpg',
                             before_after)
                         idx += 1
 
                 # save the model that corresponds to the current iteration
                 if args.save_ckpt_file:
-                    saver.save(sess, args.checkpoint_dir +'/'+str(args.dataset) + '_iteration_' + str(i) + '.ckpt', write_meta_graph=False)
+                    saver.save(sess, args.checkpoint_dir +'\\'+str(args.dataset) + '_iteration_' + str(i) + '.ckpt', write_meta_graph=False)
 
                 train_loss_gen = 0.0
                 train_acc_discrim = 0.0
@@ -201,8 +201,8 @@ def main(args):
                 iter_end=time.time()
                 logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i,args.eval_step,float(iter_end-iter_start)/60))
 
-            if KeyboardInterrupt:
-                saver.save(sess, args.checkpoint_dir  +'/'+ str(args.dataset) + '_iteration_' +  str(i) + '.ckpt', write_meta_graph=False)
+            # if KeyboardInterrupt: # windows platform not useful. linux platform it works!
+            #     saver.save(sess, args.checkpoint_dir  +'\\'+ str(args.dataset) + '_iteration_' +  str(i) + '.ckpt', write_meta_graph=False)
    
 
 
@@ -213,7 +213,7 @@ if __name__=='__main__':
     # args.exp_name=args.exp_name+timestamp
     # args.exp_name="DPED_model_20190101-19:25"
 
-    args.checkpoint_dir=args.checkpoint_dir+str(args.exp_name)
+    args.checkpoint_dir = args.checkpoint_dir + str(args.exp_name)
     if not os.path.isdir(args.checkpoint_dir):
         os.makedirs(args.checkpoint_dir)
     if not os.path.isdir(args.tesorboard_logs_dir):
