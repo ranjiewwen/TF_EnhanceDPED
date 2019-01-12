@@ -4,7 +4,7 @@ _ext
 *.pyc
 *.so
 experiments/logs
-experiments/DPED_*
+experiments/dped_*
 
 
 # pytorch/python/numpy formats
