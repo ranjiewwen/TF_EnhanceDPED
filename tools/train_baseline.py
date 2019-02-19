@@ -14,7 +14,7 @@ import numpy as np
 import sys
 import time
 
-from experiments.config import config_dped_20190107 as config
+from experiments.config import dped_config_20190107 as config
 from data.load_dataset import load_test_data, load_batch
 
 from net import resnet
@@ -93,8 +93,8 @@ def main(args):
         tf.summary.scalar('ssim', loss_ssim),
         tf.summary.scalar('learning_rate', args.learning_rate),
         merge_summary = tf.summary.merge_all()
-        train_writer = tf.summary.FileWriter(args.tesorboard_logs_dir + 'train', sess.graph,filename_suffix=args.exp_name)
-        test_writer = tf.summary.FileWriter(args.tesorboard_logs_dir + 'test', sess.graph,filename_suffix=args.exp_name)
+        train_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'train'), sess.graph,filename_suffix=args.exp_name)
+        test_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'test'), sess.graph,filename_suffix=args.exp_name)
         tf.global_variables_initializer().run()
 
         ckpt = tf.train.get_checkpoint_state(args.checkpoint_dir)
@@ -113,7 +113,7 @@ def main(args):
             phone_images = train_data[idx_train]
             dslr_images = train_answ[idx_train]
 
-            [loss_temp, temp] = sess.run([loss_generator, train_step_gen],feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: all_zeros})
+            [loss_temp, _ ] = sess.run([loss_generator, train_step_gen],feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: all_zeros})
             train_loss_gen += loss_temp / args.eval_step
 
             # train discriminator
@@ -125,7 +125,7 @@ def main(args):
             phone_images = train_data[idx_train]
             dslr_images = train_answ[idx_train]
             # sess.run(train_step_disc)=train_step_disc.compute_gradients(loss,var)+train_step_disc.apply_gradients(var) @20190105
-            [accuracy_temp, temp] = sess.run([discim_accuracy, train_step_disc],feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: swaps})
+            [accuracy_temp, _ ] = sess.run([discim_accuracy, train_step_disc],feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: swaps})
             train_acc_discrim += accuracy_temp / args.eval_step
 
             if i % args.summary_step == 0:
@@ -155,9 +155,6 @@ def main(args):
                     test_losses_gen += np.asarray(losses) / num_test_batches
                     test_accuracy_disc += accuracy_disc / num_test_batches
 
-                    # loss_ssim += MultiScaleSSIM(np.reshape(dslr_images * 255, [args.batch_size, args.patch_height, args.patch_width, 3]),
-                    #                                     enhanced_crops * 255) / num_test_batches
-
                 logs_disc = "step %d/%d, %s | discriminator accuracy | train: %.4g, test: %.4g" % \
                             (i,args.iter_max, args.dataset, train_acc_discrim, test_accuracy_disc)
                 logs_gen = "generator losses | train: %.4g, test: %.4g | content: %.4g, color: %.4g, texture: %.4g, tv: %.4g | psnr: %.4g, ssim: %.4g\n" % \
@@ -179,14 +176,13 @@ def main(args):
                         before_after = np.hstack(
                             (np.reshape(test_crops[idx], [args.patch_height, args.patch_width, 3]), crop))
                         misc.imsave(
-                            args.checkpoint_dir + '\\' + str(args.dataset) + "_" + str(idx) + '_iteration_' + str(
-                                i) + '.jpg',
-                            before_after)
+                            os.path.join(args.checkpoint_dir, str(args.dataset) + str(idx) + '_iteration_' + str(i) +
+                                         '.jpg'),before_after)
                         idx += 1
 
                 # save the model that corresponds to the current iteration
                 if args.save_ckpt_file:
-                    saver.save(sess, args.checkpoint_dir +'\\'+str(args.dataset) + '_iteration_' + str(i) + '.ckpt', write_meta_graph=False)
+                    saver.save(sess, os.path.join(args.checkpoint_dir ,str(args.dataset) + '_iteration_' + str(i) + '.ckpt'), write_meta_graph=False)
 
                 train_loss_gen = 0.0
                 train_acc_discrim = 0.0
@@ -201,8 +197,8 @@ def main(args):
                 iter_end=time.time()
                 logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i,args.eval_step,float(iter_end-iter_start)/60))
 
-            # if KeyboardInterrupt: # windows platform not useful. linux platform it works!
-            #     saver.save(sess, args.checkpoint_dir  +'\\'+ str(args.dataset) + '_iteration_' +  str(i) + '.ckpt', write_meta_graph=False)
+            if KeyboardInterrupt: # windows platform not useful. linux platform it works!
+                saver.save(sess, os.path.join(args.checkpoint_dir , str(args.dataset) + '_iteration_' +  str(i) + '.ckpt'), write_meta_graph=False)
    
 
 
@@ -213,14 +209,14 @@ if __name__=='__main__':
     # args.exp_name=args.exp_name+timestamp
     # args.exp_name="DPED_model_20190101-19:25"
 
-    args.checkpoint_dir = args.checkpoint_dir + str(args.exp_name)
+    args.checkpoint_dir = os.path.join(args.checkpoint_dir , str(args.exp_name))
     if not os.path.isdir(args.checkpoint_dir):
         os.makedirs(args.checkpoint_dir)
     if not os.path.isdir(args.tesorboard_logs_dir):
         os.makedirs(args.tesorboard_logs_dir)
 
     output_dir=args.checkpoint_dir
-    logger = setup_logger("TF_EnhanceDPED_benchmark", output_dir)
+    logger = setup_logger("TF_DPED_baseline", output_dir)
 
     logger.info(args)
     start=time.time()

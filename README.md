@@ -2,8 +2,9 @@
 
 - Tensorflow implement of image enhancement base on dped.
 - First reimplementation of ICCV 2017 paper "[DSLR-Quality Photos on Mobile Devices with Deep Convolutional Networks](https://arxiv.org/pdf/1704.02470.pdf)" .
-- Second will modify the generate network and loss to make the image enhancement result better. 
-
+- Seconde I am the main team members. Join the PRIM2018 Challenge on Perceptual Image Enhancement on Smartphones (Track B: Image Enhancement) http://ai-benchmark.com/challenge.html#challenge . Our team Win the championship!
+- I will modify the generate network and loss to make the image enhancement result better. 
+  
 ### Prerequisites
 
 - Python + scipy, numpy packages
@@ -81,6 +82,4 @@
 
 - 2019/01/02 init the repository.
 - Thanks offical code [DPED](https://github.com/aiff22/DPED) !
-
-
-
+- Range Scaling Global U-Net for Perceptual Image Enhancement on Mobile Devices,Jie Huang, Pengfei Zhu, Mingrui Geng, Jiewen Ran, Xingguang Zhou, Chen Xing, Pengfei Wan, Xiangyang Ji.

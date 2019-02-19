@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from ssim import MultiScaleSSIM
+from ai_challenge.ssim import MultiScaleSSIM
 
 import tensorflow as tf
 from scipy import misc
@@ -17,8 +17,8 @@ import os
 # from exp4_8_01_unet import unet as test_model
 # model_location = "models_pretrained/iphone_iteration_55000.ckpt"
 
-from models import resnet_12_64 as test_model
-model_location = "models_pretrained/model.ckpt-100897"
+from ai_challenge.models import resnet_12_64 as test_model
+model_location = "ai_challenge/models_pretrained/dped_resnet_12_64"
 
 compute_PSNR_SSIM = True
 compute_running_time = True
@@ -51,7 +51,7 @@ if __name__ == "__main__":
             sess, g.as_graph_def(), "input,output".split(",")
         )
 
-        tf.train.write_graph(output_graph_def, 'models_converted', 'model_final.pb', as_text=False)
+        tf.train.write_graph(output_graph_def, 'ai_challenge/models_converted', 'model_final.pb', as_text=False)
 
     print("Model was successfully saved!")
     print("\n-------------------------------------\n")
@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
             print("\rLoading pre-trained model")
 
-            with tf.gfile.FastGFile("models_converted/model_final.pb", 'rb') as f:
+            with tf.gfile.FastGFile("ai_challenge/models_converted/model_final.pb", 'rb') as f:
 
                 graph_def = tf.GraphDef()
                 graph_def.ParseFromString(f.read())
@@ -92,13 +92,13 @@ if __name__ == "__main__":
 
             ssim_score = 0.0
             psnr_score = 0.0
-            validation_images = os.listdir("dped/patches/canon/")
+            validation_images = os.listdir("ai_challenge/dped/patches/canon/")
             num_val_images = len(validation_images)
 
             for j in range(num_val_images):
 
-                image_phone = misc.imread("dped/patches/iphone/" + validation_images[j])
-                image_dslr = misc.imread("dped/patches/canon/" + validation_images[j])
+                image_phone = misc.imread("ai_challenge/dped/patches/iphone/" + validation_images[j])
+                image_dslr = misc.imread("ai_challenge/dped/patches/canon/" + validation_images[j])
 
                 image_phone = np.reshape(image_phone, [1, image_phone.shape[0], image_phone.shape[1], 3]) / 255
                 image_dslr = np.reshape(image_dslr, [1, image_dslr.shape[0], image_dslr.shape[1], 3]) / 255
@@ -127,12 +127,12 @@ if __name__ == "__main__":
         tf.reset_default_graph()
 
         print("Testing pre-trained baseline SRCNN model")
-        avg_time_baseline, max_ram = utils.compute_running_time("superres", "models_pretrained/dped_srcnn.pb", "dped/HD_res/")
+        avg_time_baseline, max_ram = utils.compute_running_time("superres", "ai_challenge/models_pretrained/dped_srcnn.pb", "ai_challenge/dped/HD_res/")
 
         tf.reset_default_graph()
 
         print("Testing provided model")
-        avg_time_solution, max_ram = utils.compute_running_time("superres", "models_converted/model.pb", "dped/HD_res/")
+        avg_time_solution, max_ram = utils.compute_running_time("superres", "ai_challenge/models_converted/model.pb", "ai_challenge/dped/HD_res/")
 
         print("Baseline SRCNN time, ms: ", avg_time_baseline)
         print("Test model time, ms: ", avg_time_solution)
@@ -153,7 +153,7 @@ if __name__ == "__main__":
         tf.reset_default_graph()
         config = None
         with tf.Session(config=config) as sess:
-            with tf.gfile.FastGFile("models_converted/model.pb", 'rb') as f:
+            with tf.gfile.FastGFile("ai_challenge/models_converted/model.pb", 'rb') as f:
                 graph_def = tf.GraphDef()
                 graph_def.ParseFromString(f.read())
                 tf.import_graph_def(graph_def, name='')
@@ -163,7 +163,7 @@ if __name__ == "__main__":
 
                 output = tf.cast(255.0 * tf.squeeze(tf.clip_by_value(out, 0, 1)), tf.uint8)
 
-            input_path = "dped/full_size_test_images/"
+            input_path = "ai_challenge/dped/full_size_test_images/"
             test_images = os.listdir(input_path)
             test_images=[elem for elem in test_images if len(elem)<10] # filter file name
             num_test_images = len(test_images)

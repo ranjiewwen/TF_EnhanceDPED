@@ -14,11 +14,11 @@ import numpy as np
 import sys
 import time
 
-from experiments.config import config_dped_20190107 as config
+from experiments.config import dped_config_20190107 as config
 from data.load_dataset import load_test_data, load_batch
 
 from net import unet, xUnit_res
-from loss import color_loss, content_loss, variation_loss, texture_loss,multi_content_loss
+from loss import color_loss, variation_loss, texture_loss,multi_content_loss
 from metrics import MultiScaleSSIM, PSNR
 from utils.logger import setup_logger
 
@@ -161,9 +161,6 @@ def main(args):
                     test_losses_gen += np.asarray(losses) / num_test_batches
                     test_accuracy_disc += accuracy_disc / num_test_batches
 
-                    # loss_ssim += MultiScaleSSIM(np.reshape(dslr_images * 255, [args.batch_size, args.patch_height, args.patch_width, 3]),
-                    #                                     enhanced_crops * 255) / num_test_batches
-
                 logs_disc = "step %d/%d, %s | discriminator accuracy | train: %.4g, test: %.4g" % \
                             (i, args.iter_max, args.dataset, train_acc_discrim, test_accuracy_disc)
                 logs_gen = "generator losses | train: %.4g, test: %.4g | content: %.4g, color: %.4g, texture: %.4g, tv: %.4g | psnr: %.4g, ssim: %.4g\n" % \
@@ -173,8 +170,7 @@ def main(args):
                 logger.info(logs_disc)
                 logger.info(logs_gen)
 
-                test_summary = sess.run(merge_summary,
-                                        feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: swaps})
+                test_summary = sess.run(merge_summary,feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: swaps})
                 test_writer.add_summary(test_summary, i)
 
                 # save visual results for several test image crops
@@ -186,14 +182,14 @@ def main(args):
                         before_after = np.hstack(
                             (np.reshape(test_crops[idx], [args.patch_height, args.patch_width, 3]), crop))
                         misc.imsave(
-                            args.checkpoint_dir + '/' + str(args.dataset) + "_" + str(idx) + '_iteration_' + str(
-                                i) + '.jpg',
-                            before_after)
+                            os.path.join(args.checkpoint_dir, str(args.dataset), str(idx), '_iteration_', str(i),
+                                         '.jpg'), before_after)
                         idx += 1
 
                 # save the model that corresponds to the current iteration
                 if args.save_ckpt_file:
-                    saver.save(sess, args.checkpoint_dir + '/' + str(args.dataset) + '_iteration_' + str(i) + '.ckpt',
+                    saver.save(sess,
+                               os.path.join(args.checkpoint_dir, str(args.dataset) + '_iteration_' + str(i) + '.ckpt'),
                                write_meta_graph=False)
 
                 train_loss_gen = 0.0
@@ -211,7 +207,8 @@ def main(args):
                     iter_end - iter_start) / 60))
 
             if KeyboardInterrupt:
-                saver.save(sess, args.checkpoint_dir + '/' + str(args.dataset) + '_iteration_' + str(i) + '.ckpt',
+                saver.save(sess,
+                           os.path.join(args.checkpoint_dir, str(args.dataset) + '_iteration_' + str(i) + '.ckpt'),
                            write_meta_graph=False)
 
 
@@ -221,7 +218,8 @@ if __name__ == '__main__':
     # timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d-%H:%M')
     # args.exp_name=args.exp_name+timestamp
     # args.exp_name="DPED_model_20190101-19:25"
-    args.checkpoint_dir = args.checkpoint_dir + str(args.exp_name)
+
+    args.checkpoint_dir = os.path.join(args.checkpoint_dir, str(args.exp_name))
     if not os.path.isdir(args.checkpoint_dir):
         os.makedirs(args.checkpoint_dir)
     if not os.path.isdir(args.tesorboard_logs_dir):
