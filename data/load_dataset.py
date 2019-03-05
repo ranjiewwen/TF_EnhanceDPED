@@ -6,8 +6,8 @@ import sys
 
 def load_test_data(phone, dped_dir, TEST_SIZE,IMAGE_SIZE):
 
-    test_directory_phone = os.path.join(dped_dir,str(phone)) + '/test_data/patches/' + str(phone) + '/'
-    test_directory_dslr = os.path.join(dped_dir,str(phone)) + '/test_data/patches/canon/'
+    test_directory_phone = os.path.join(dped_dir,str(phone),'test_data','patches',str(phone))
+    test_directory_dslr = os.path.join(dped_dir,str(phone),'test_data','patches','canon')
 
     NUM_TEST_IMAGES = len([name for name in os.listdir(test_directory_phone)
                            if os.path.isfile(os.path.join(test_directory_phone, name))])
@@ -37,8 +37,8 @@ def load_test_data(phone, dped_dir, TEST_SIZE,IMAGE_SIZE):
 
 def load_batch(phone, dped_dir, TRAIN_SIZE, IMAGE_SIZE):
 
-    train_directory_phone = os.path.join(dped_dir,str(phone)) + '/training_data/' + str(phone) + '/'
-    train_directory_dslr = os.path.join(dped_dir,str(phone)) + '/training_data/canon/'
+    train_directory_phone = os.path.join(dped_dir,str(phone),'training_data',str(phone))
+    train_directory_dslr = os.path.join(dped_dir,str(phone),'training_data'+'canon')
 
     NUM_TRAINING_IMAGES = len([name for name in os.listdir(train_directory_phone)
                                if os.path.isfile(os.path.join(train_directory_phone, name))])

@@ -93,8 +93,11 @@ def main(args):
         tf.summary.scalar('ssim', loss_ssim),
         tf.summary.scalar('learning_rate', args.learning_rate),
         merge_summary = tf.summary.merge_all()
-        train_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'train'), sess.graph,filename_suffix=args.exp_name)
-        test_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'test'), sess.graph,filename_suffix=args.exp_name)
+        train_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'train', 'args.exp_name'),
+                                             sess.graph,
+                                             filename_suffix=args.exp_name)
+        test_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'test', 'args.exp_name'), sess.graph,
+                                            filename_suffix=args.exp_name)
         tf.global_variables_initializer().run()
 
         ckpt = tf.train.get_checkpoint_state(args.checkpoint_dir)
@@ -197,8 +200,8 @@ def main(args):
                 iter_end=time.time()
                 logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i,args.eval_step,float(iter_end-iter_start)/60))
 
-            if KeyboardInterrupt: # windows platform not useful. linux platform it works!
-                saver.save(sess, os.path.join(args.checkpoint_dir , str(args.dataset) + '_iteration_' +  str(i) + '.ckpt'), write_meta_graph=False)
+            # if KeyboardInterrupt: # windows platform not useful. linux platform it works!
+            #     saver.save(sess, os.path.join(args.checkpoint_dir , str(args.dataset) + '_iteration_' +  str(i) + '.ckpt'), write_meta_graph=False)
    
 
 

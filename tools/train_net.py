@@ -14,7 +14,7 @@ import numpy as np
 import sys
 import time
 
-from experiments.config import dped_config_20190107 as config
+from experiments.config import dped_config_20190305 as config
 from data.load_dataset import load_test_data, load_batch
 
 from net import unet, xUnit_res
@@ -94,9 +94,9 @@ def main(args):
         tf.summary.scalar('ssim', loss_ssim),
         tf.summary.scalar('learning_rate', args.learning_rate),
         merge_summary = tf.summary.merge_all()
-        train_writer = tf.summary.FileWriter(args.tesorboard_logs_dir + '/train', sess.graph,
+        train_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir,'train','args.exp_name'), sess.graph,
                                              filename_suffix=args.exp_name)
-        test_writer = tf.summary.FileWriter(args.tesorboard_logs_dir + '/test', sess.graph,
+        test_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir,'test','args.exp_name'), sess.graph,
                                             filename_suffix=args.exp_name)
         tf.global_variables_initializer().run()
 
@@ -206,10 +206,10 @@ def main(args):
                 logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i, args.eval_step, float(
                     iter_end - iter_start) / 60))
 
-            if KeyboardInterrupt:
-                saver.save(sess,
-                           os.path.join(args.checkpoint_dir, str(args.dataset) + '_iteration_' + str(i) + '.ckpt'),
-                           write_meta_graph=False)
+            # if KeyboardInterrupt:
+            #     saver.save(sess,
+            #                os.path.join(args.checkpoint_dir, str(args.dataset) + '_iteration_' + str(i) + '.ckpt'),
+            #                write_meta_graph=False)
 
 
 if __name__ == '__main__':
