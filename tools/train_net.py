@@ -94,9 +94,9 @@ def main(args):
         tf.summary.scalar('ssim', loss_ssim),
         tf.summary.scalar('learning_rate', args.learning_rate),
         merge_summary = tf.summary.merge_all()
-        train_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir,'train','args.exp_name'), sess.graph,
+        train_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir,'train',args.exp_name), sess.graph,
                                              filename_suffix=args.exp_name)
-        test_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir,'test','args.exp_name'), sess.graph,
+        test_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir,'test',args.exp_name), sess.graph,
                                             filename_suffix=args.exp_name)
         tf.global_variables_initializer().run()
 
@@ -202,9 +202,8 @@ def main(args):
                 test_data, test_answ = load_test_data(args.dataset, args.dataset_dir, args.test_size, args.patch_size)
                 train_data, train_answ = load_batch(args.dataset, args.dataset_dir, args.train_size, args.patch_size)
 
-                iter_end = time.time()
                 logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i, args.eval_step, float(
-                    iter_end - iter_start) / 60))
+                    time.time() - iter_start) / 60))
 
             # if KeyboardInterrupt:
             #     saver.save(sess,

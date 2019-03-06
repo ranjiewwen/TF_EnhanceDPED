@@ -93,10 +93,10 @@ def main(args):
         tf.summary.scalar('ssim', loss_ssim),
         tf.summary.scalar('learning_rate', args.learning_rate),
         merge_summary = tf.summary.merge_all()
-        train_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'train', 'args.exp_name'),
+        train_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'train', args.exp_name),
                                              sess.graph,
                                              filename_suffix=args.exp_name)
-        test_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'test', 'args.exp_name'), sess.graph,
+        test_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'test', args.exp_name), sess.graph,
                                             filename_suffix=args.exp_name)
         tf.global_variables_initializer().run()
 
@@ -107,6 +107,8 @@ def main(args):
             saver.restore(sess, ckpt.model_checkpoint_path)
             import re
             start_i=int(re.findall("_(\d+).ckpt",ckpt.model_checkpoint_path)[0])
+        else:
+            logger.info("don't load chechpoint...")
 
         for i in range(start_i,args.iter_max):
             
@@ -196,9 +198,8 @@ def main(args):
                 del test_answ
                 test_data, test_answ = load_test_data(args.dataset, args.dataset_dir, args.test_size, args.patch_size)
                 train_data, train_answ = load_batch(args.dataset, args.dataset_dir, args.train_size, args.patch_size)
-                
-                iter_end=time.time()
-                logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i,args.eval_step,float(iter_end-iter_start)/60))
+
+                # logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i,args.eval_step,float(time.time()-iter_start)/60))
 
             # if KeyboardInterrupt: # windows platform not useful. linux platform it works!
             #     saver.save(sess, os.path.join(args.checkpoint_dir , str(args.dataset) + '_iteration_' +  str(i) + '.ckpt'), write_meta_graph=False)

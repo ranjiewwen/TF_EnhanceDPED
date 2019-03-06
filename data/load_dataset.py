@@ -4,7 +4,7 @@ import os
 import numpy as np
 import sys
 
-def load_test_data(phone, dped_dir, TEST_SIZE,IMAGE_SIZE):
+def load_test_data(phone, dped_dir, TEST_SIZE, IMAGE_SIZE):
 
     test_directory_phone = os.path.join(dped_dir,str(phone),'test_data','patches',str(phone))
     test_directory_dslr = os.path.join(dped_dir,str(phone),'test_data','patches','canon')
