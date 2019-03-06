@@ -11,11 +11,11 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Unsupported value encountered.')
 
-experiment_name = os.path.splitext(__file__.split('\\')[-1])[0]
-PROJECT_PATH="F:\\ranjiewen\\TF_EnhanceDPED"
+# experiment_name = os.path.splitext(__file__.split('\\')[-1])[0]
+# PROJECT_PATH="F:\\ranjiewen\\TF_EnhanceDPED"
 
-# experiment_name = os.path.splitext(__file__.split('/')[-1])[0]
-# PROJECT_PATH="/home/rjw/desktop/graduation_project/TF_EnhanceDPED"
+experiment_name = os.path.splitext(__file__.split('/')[-1])[0]
+PROJECT_PATH="/home/rjw/desktop/graduation_project/TF_EnhanceDPED"
 
 # specifying default parameters
 def process_command_args(arguments):
@@ -52,7 +52,7 @@ def process_command_args(arguments):
     parser.add_argument('--w_color',type=float,default=0.5)
     parser.add_argument('--w_texture',type=float,default=1)
     parser.add_argument('--w_tv',type=float,default=2000)
-    parser.add_argument('--eval_step',type=int,default=1000) #1000
+    parser.add_argument('--eval_step',type=int,default=100) #100
     parser.add_argument('--summary_step',type=int,default=2)
 
     ## optimization related arguments
