@@ -22,7 +22,7 @@ model_location = "ai_challenge/models_pretrained/dped_resnet_12_64"
 
 compute_PSNR_SSIM = True
 compute_running_time = True
-compute_Image=False
+compute_Image = False
 
 if __name__ == "__main__":
 

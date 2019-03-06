@@ -11,11 +11,11 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Unsupported value encountered.')
 
-experiment_name = os.path.splitext(__file__.split('\\')[-1])[0]
-PROJECT_PATH="F:\\ranjiewen\\TF_EnhanceDPED"
+# experiment_name = os.path.splitext(__file__.split('\\')[-1])[0]
+# PROJECT_PATH="F:\\ranjiewen\\TF_EnhanceDPED"
 
-# experiment_name = os.path.splitext(__file__.split('/')[-1])[0]
-# PROJECT_PATH="/home/rjw/desktop/graduation_project/TF_EnhanceDPED"
+experiment_name = os.path.splitext(__file__.split('/')[-1])[0]
+PROJECT_PATH="/home/rjw/desktop/graduation_project/TF_EnhanceDPED"
 
 # specifying default parameters
 def process_command_args(arguments):
