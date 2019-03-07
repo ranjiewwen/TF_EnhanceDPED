@@ -1,23 +1,21 @@
 from __future__ import print_function
 
-from ai_challenge.ssim import MultiScaleSSIM
-
-import tensorflow as tf
-from scipy import misc
-import numpy as np
-import utils
 import os
 
+import numpy as np
+import tensorflow as tf
+from scipy import misc
+
+import utils
+from ai_challenge.models import resnet_12_64 as test_model
+from ai_challenge.ssim import MultiScaleSSIM
 
 ## --------- Change test parameters below -----------
-
 # from models import srcnn as test_model                  # import your model definition as "test_model"
 # model_location = "models_pretrained/dped_srcnn"         # specify the location of your saved pre-trained model (ckpt file)
-
 # from exp4_8_01_unet import unet as test_model
 # model_location = "models_pretrained/iphone_iteration_55000.ckpt"
 
-from ai_challenge.models import resnet_12_64 as test_model
 model_location = "ai_challenge/models_pretrained/dped_resnet_12_64"
 
 compute_PSNR_SSIM = True
@@ -57,7 +55,6 @@ if __name__ == "__main__":
     print("\n-------------------------------------\n")
     sess.close()
 
-
     if compute_PSNR_SSIM:
 
         #######################################
@@ -72,7 +69,6 @@ if __name__ == "__main__":
             print("\rLoading pre-trained model")
 
             with tf.gfile.FastGFile("ai_challenge/models_converted/model_final.pb", 'rb') as f:
-
                 graph_def = tf.GraphDef()
                 graph_def.ParseFromString(f.read())
                 tf.import_graph_def(graph_def, name='')
@@ -96,7 +92,6 @@ if __name__ == "__main__":
             num_val_images = len(validation_images)
 
             for j in range(num_val_images):
-
                 image_phone = misc.imread("ai_challenge/dped/patches/iphone/" + validation_images[j])
                 image_dslr = misc.imread("ai_challenge/dped/patches/canon/" + validation_images[j])
 
@@ -114,9 +109,7 @@ if __name__ == "__main__":
             print("\n-------------------------------------\n")
             sess.close()
 
-
     if compute_running_time:
-
         ##############################
         #  3 Computing running time  #
         ##############################
@@ -127,24 +120,30 @@ if __name__ == "__main__":
         tf.reset_default_graph()
 
         print("Testing pre-trained baseline SRCNN model")
-        avg_time_baseline, max_ram = utils.compute_running_time("superres", "ai_challenge/models_pretrained/dped_srcnn.pb", "ai_challenge/dped/HD_res/")
+        avg_time_baseline, max_ram = utils.compute_running_time("superres",
+                                                                "ai_challenge/models_pretrained/dped_srcnn.pb",
+                                                                "ai_challenge/dped/HD_res/")
 
         tf.reset_default_graph()
 
         print("Testing provided model")
-        avg_time_solution, max_ram = utils.compute_running_time("superres", "ai_challenge/models_converted/model.pb", "ai_challenge/dped/HD_res/")
+        avg_time_solution, max_ram = utils.compute_running_time("superres", "ai_challenge/models_converted/model.pb",
+                                                                "ai_challenge/dped/HD_res/")
 
         print("Baseline SRCNN time, ms: ", avg_time_baseline)
         print("Test model time, ms: ", avg_time_solution)
         print("Speedup ratio (baseline, ms / solution, ms): %.4f" % (float(avg_time_baseline) / avg_time_solution))
         print("Approximate RAM consumption (HD image): " + str(max_ram) + " MB")
 
-        scoreA = 4 * (psnr_score - 21) + 100 * (ssim_score - 0.9) + 2 * min(float(avg_time_baseline) / avg_time_solution,4)
-        scoreB = 1 * (psnr_score - 21) + 400 * (ssim_score - 0.9) + 2 * min(float(avg_time_baseline) / avg_time_solution,4)
-        scoreC = 2 * (psnr_score - 21) + 200 * (ssim_score - 0.9) + 2.9 * min(float(avg_time_baseline) / avg_time_solution,4)
+        scoreA = 4 * (psnr_score - 21) + 100 * (ssim_score - 0.9) + 2 * min(
+            float(avg_time_baseline) / avg_time_solution, 4)
+        scoreB = 1 * (psnr_score - 21) + 400 * (ssim_score - 0.9) + 2 * min(
+            float(avg_time_baseline) / avg_time_solution, 4)
+        scoreC = 2 * (psnr_score - 21) + 200 * (ssim_score - 0.9) + 2.9 * min(
+            float(avg_time_baseline) / avg_time_solution, 4)
 
         print("------------------------------\n")
-        print("scoreA: %0.4g ; scoreB: %.4g ; scoreC: %.4g ." % (scoreA,scoreB,scoreC) )
+        print("scoreA: %0.4g ; scoreB: %.4g ; scoreC: %.4g ." % (scoreA, scoreB, scoreC))
         print("------------------------------\n")
 
     if compute_Image:
@@ -165,20 +164,20 @@ if __name__ == "__main__":
 
             input_path = "ai_challenge/dped/full_size_test_images/"
             test_images = os.listdir(input_path)
-            test_images=[elem for elem in test_images if len(elem)<10] # filter file name
+            test_images = [elem for elem in test_images if len(elem) < 10]  # filter file name
             num_test_images = len(test_images)
 
             for j in range(num_test_images):
                 image_phone = misc.imread(input_path + test_images[j])
                 fname = os.path.splitext(os.path.basename(test_images[j]))[0]
-                
+
                 image_phone = np.reshape(image_phone, [1, image_phone.shape[0], image_phone.shape[1], 3]) / 255
                 enhanced = sess.run(output, feed_dict={x: image_phone})
                 out_path = os.path.join(input_path, fname + "_enhanced_xU.png")
                 misc.imsave(out_path, enhanced)
-                #print(enhanced.shape)
-                image_phone=np.reshape(image_phone,enhanced.shape)*255
-                #print(image_phone.shape,enhanced.shape)
-                before_after=np.hstack((image_phone,enhanced))
-                #print(before_after.shape)
-                #misc.imsave(os.path.join(input_path,fname+"_compare.png"),before_after)
+                # print(enhanced.shape)
+                image_phone = np.reshape(image_phone, enhanced.shape) * 255
+                # print(image_phone.shape,enhanced.shape)
+                before_after = np.hstack((image_phone, enhanced))
+                # print(before_after.shape)
+                # misc.imsave(os.path.join(input_path,fname+"_compare.png"),before_after)

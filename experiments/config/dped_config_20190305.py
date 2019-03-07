@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 import sys
 import argparse
 import os
@@ -11,9 +14,11 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Unsupported value encountered.')
 
+## windows platform
 experiment_name = os.path.splitext(__file__.split('\\')[-1])[0]
 PROJECT_PATH="F:\\ranjiewen\\TF_EnhanceDPED"
 
+## ubuntu platform
 # experiment_name = os.path.splitext(__file__.split('/')[-1])[0]
 # PROJECT_PATH="/home/rjw/desktop/graduation_project/TF_EnhanceDPED"
 
@@ -33,7 +38,7 @@ def process_command_args(arguments):
     parser.add_argument('--pretrain_weights',type=str,default = os.path.join(PROJECT_PATH,"data","vgg_models","imagenet-vgg-verydeep-19.mat"))
 
     ## models retated argumentss
-    parser.add_argument('--save_visual_result',type=str2bool,default=False, help="whether to save visual result file ")
+    parser.add_argument('--save_visual_result',type=str2bool,default=True, help="whether to save visual result file ")
     parser.add_argument('--save_ckpt_file', type=str2bool, default=True,
                         help="whether to save trained checkpoint file ")
     parser.add_argument('--split', type=str, default='train',help="choose from train/val/test/trainval")
@@ -48,7 +53,7 @@ def process_command_args(arguments):
     parser.add_argument('--batch_size',type=int,default=32)
     parser.add_argument('--train_size',type=int,default=3000) # 3000
     parser.add_argument('--test_size',type=int,default=300)  # 300
-    parser.add_argument('--w_content',type=float,default=20)
+    parser.add_argument('--w_content',type=float,default=2)
     parser.add_argument('--w_color',type=float,default=0.5)
     parser.add_argument('--w_texture',type=float,default=5)
     parser.add_argument('--w_tv',type=float,default=2000)

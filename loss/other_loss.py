@@ -3,13 +3,23 @@ import utils.utils as utils
 
 def color_loss(enhanced, dslr_image, batch_size):
 
+    dslr_blur=dslr_image
+    enhanced_blur=enhanced
+
+    # loss_color = tf.reduce_sum(tf.pow(dslr_blur - enhanced_blur, 2)) / (2 * batch_size)
+    loss_color = tf.reduce_sum(tf.abs(dslr_blur - enhanced_blur)) / (2 * batch_size) * 0.1
+
+    return loss_color
+
+
+def color_blur_loss(enhanced, dslr_image, batch_size):
+
     enhanced_blur = utils.blur(enhanced)
     dslr_blur = utils.blur(dslr_image)
-    # dslr_blur=dslr_image
-    # enhanced_blur=enhanced
 
     loss_color = tf.reduce_sum(tf.pow(dslr_blur - enhanced_blur, 2)) / (2 * batch_size)
     return loss_color
+
 
 def variation_loss(enhanced,PATCH_WIDTH,PATCH_HEIGHT,batch_size):
     batch_shape = (batch_size, PATCH_WIDTH, PATCH_HEIGHT, 3)

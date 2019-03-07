@@ -16,11 +16,12 @@ import tensorflow as tf
 from scipy import misc
 
 from data.load_dataset import load_test_data, load_batch
-from experiments.config import dped_config_20190305 as config
-from loss import color_loss, variation_loss, texture_loss, multi_content_loss
+from experiments.config import dped_config_20190308 as config
+from loss import color_loss, variation_loss, texture_loss
 from metrics import MultiScaleSSIM, PSNR
 from net import unet
 from utils.logger import setup_logger
+from loss import vgg19_loss
 
 np.random.seed(0)
 
@@ -55,10 +56,20 @@ def main(args):
         # global_step = tf.Variable(0)
         # learning_rate = tf.train.exponential_decay(args.learning_rate, global_step, decay_steps=args.train_size / args.batch_size, decay_rate=0.98, staircase=True)
 
+        # load vgg models
+        vgg = vgg19_loss.Vgg19(vgg_path=args.pretrain_weights)
+        [w, h, d] = enhanced.get_shape().as_list()[1:]
+
         # loss introduce
+        loss_content = tf.reduce_mean(tf.sqrt(tf.reduce_sum(
+            tf.square((vgg.extract_feature(enhanced) - vgg.extract_feature(dslr_image))))) / (w * h * d))
+        # loss_content = multi_content_loss(args.pretrain_weights, enhanced, dslr_image, args.batch_size) # change another way
+
+        # meon loss
+
         loss_texture, discim_accuracy = texture_loss(enhanced, dslr_image, args.patch_width, args.patch_height, adv_)
         loss_discrim = -loss_texture
-        loss_content = multi_content_loss(args.pretrain_weights, enhanced, dslr_image, args.batch_size)
+
         loss_color = color_loss(enhanced, dslr_image, args.batch_size)
         loss_tv = variation_loss(enhanced, args.patch_width, args.patch_height, args.batch_size)
 

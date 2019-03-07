@@ -321,7 +321,11 @@ def demo():
     del MEON_evaluate_model
 
 
-def MEON_loss(img, checkpoint_dir):
+def MEON_loss(file_name, checkpoint_dir):
+    try:
+        img = misc.imread(file_name)
+    except Exception:
+        raise IOError('Fail to load image: %s' % file_name)
     MEON_evaluate_model = MEON_eval(checkpoint_dir=checkpoint_dir)
     MEON_evaluate_model.initialize()  # initialize with pretrained weights
 
@@ -334,4 +338,6 @@ def MEON_loss(img, checkpoint_dir):
 
 
 if __name__ == '__main__':
-    demo()
+    # demo()
+    p_scores = MEON_loss('../demo/imgs/1.bmp','../data/weights/')
+    print(p_scores)

@@ -1,13 +1,15 @@
 # python test_model.py model=iphone_orig dped_dir=dped/ test_subset=full iteration=all resolution=orig use_gpu=true
 
-from scipy import misc
-import numpy as np
-import tensorflow as tf
-from net import resnet
-from utils import utils
 import os
 import sys
+
+import numpy as np
+import tensorflow as tf
+from scipy import misc
+
 from experiments.config import dped_config_20190107 as config
+from net import resnet
+from utils import utils
 
 # process command arguments
 phone, dped_dir, test_subset, iteration, resolution, use_gpu = config.process_test_model_args(sys.argv)
@@ -29,7 +31,6 @@ x_image = tf.reshape(x_, [-1, IMAGE_HEIGHT, IMAGE_WIDTH, 3])
 enhanced = resnet(x_image)
 
 with tf.Session(config=config) as sess:
-
     test_dir = dped_dir + phone.replace("_orig", "") + "/test_data/full_size_test_images/"
     test_photos = [f for f in os.listdir(test_dir) if os.path.isfile(test_dir + f)]
 
@@ -44,7 +45,6 @@ with tf.Session(config=config) as sess:
         saver.restore(sess, "models_orig/" + phone)
 
         for photo in test_photos:
-
             # load training image and crop it if necessary
 
             print("Testing original " + phone.replace("_orig", "") + " model, processing image " + photo)
@@ -82,7 +82,6 @@ with tf.Session(config=config) as sess:
             saver.restore(sess, "models/" + phone + "_iteration_" + str(i) + ".ckpt")
 
             for photo in test_photos:
-
                 # load training image and crop it if necessary
 
                 print("iteration " + str(i) + ", processing image " + photo)
@@ -101,5 +100,7 @@ with tf.Session(config=config) as sess:
 
                 # save the results as .png images
 
-                misc.imsave("visual_results/" + phone + "_" + photo_name + "_iteration_" + str(i) + "_enhanced.png", enhanced_image)
-                misc.imsave("visual_results/" + phone + "_" + photo_name + "_iteration_" + str(i) + "_before_after.png", before_after)
+                misc.imsave("visual_results/" + phone + "_" + photo_name + "_iteration_" + str(i) + "_enhanced.png",
+                            enhanced_image)
+                misc.imsave("visual_results/" + phone + "_" + photo_name + "_iteration_" + str(i) + "_before_after.png",
+                            before_after)
