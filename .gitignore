@@ -29,6 +29,7 @@ experiments/dped_*
 
 # project dirs
 data/dped
+data/weights
 data/vgg_models
 ai_challenge/dped
 ai_challenge/models_converted

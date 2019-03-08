@@ -3,9 +3,10 @@
 #
 # Author:   ranjiewen
 # URL:
-# Created:  2019-01-07
+# Created:  2019-01-15
 
 # python train_model.py dataset={iphone,sony,blackberry} dped_dir=dped vgg_dir=pretrain_models/imagenet-vgg-verydeep-19.mat
+# model: unet + (L1+SSIM+Muil_Vgg+TV+GAN)
 
 import os
 import sys

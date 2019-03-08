@@ -6,6 +6,7 @@
 # Created:  2019-01-01
 
 # python train_model.py dataset={iphone,sony,blackberry} dped_dir=dped vgg_dir=pretrain_models/imagenet-vgg-verydeep-19.mat
+# model: resnet + (L2+Single_Vgg+TV+GAN)
 
 import os
 import sys

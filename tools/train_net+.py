@@ -3,7 +3,7 @@
 #
 # Author:   ranjiewen
 # URL:
-# Created:  2019-01-07
+# Created:  2019-03-07
 
 # python train_model.py dataset={iphone,sony,blackberry} dped_dir=dped vgg_dir=pretrain_models/imagenet-vgg-verydeep-19.mat
 
@@ -17,7 +17,7 @@ from scipy import misc
 
 from data.load_dataset import load_test_data, load_batch
 from experiments.config import dped_config_20190308 as config
-from loss import color_loss, variation_loss, texture_loss
+from loss import color_loss, variation_loss, texture_loss,meon_loss
 from metrics import MultiScaleSSIM, PSNR
 from net import unet
 from utils.logger import setup_logger
@@ -51,21 +51,27 @@ def main(args):
 
         adv_ = tf.placeholder(tf.float32, [None, 1])
         enhanced = unet(phone_image)
+        [w, h, d] = enhanced.get_shape().as_list()[1:]
 
         # # learning rate exponential_decay
         # global_step = tf.Variable(0)
         # learning_rate = tf.train.exponential_decay(args.learning_rate, global_step, decay_steps=args.train_size / args.batch_size, decay_rate=0.98, staircase=True)
 
-        # load vgg models
-        vgg = vgg19_loss.Vgg19(vgg_path=args.pretrain_weights)
-        [w, h, d] = enhanced.get_shape().as_list()[1:]
-
-        # loss introduce
-        loss_content = tf.reduce_mean(tf.sqrt(tf.reduce_sum(
-            tf.square((vgg.extract_feature(enhanced) - vgg.extract_feature(dslr_image))))) / (w * h * d))
-        # loss_content = multi_content_loss(args.pretrain_weights, enhanced, dslr_image, args.batch_size) # change another way
+        ## loss introduce
+        '''
+        content loss three ways : 
+        1. vgg_loss: mat model load;
+        2. vgg_loss: npy model load;
+        3. iqa model(meon_loss): feature and scores
+        '''
+        # vgg = vgg19_loss.Vgg19(vgg_path=args.pretrain_weights) #  # load vgg models
+        # vgg_content = tf.reduce_mean(tf.sqrt(tf.reduce_sum(
+        #     tf.square((vgg.extract_feature(enhanced) - vgg.extract_feature(dslr_image))))) / (w * h * d))
+        # # loss_content = multi_content_loss(args.pretrain_weights, enhanced, dslr_image, args.batch_size) # change another way
 
         # meon loss
+        # with tf.variable_scope('meon_loss') as scope:
+        MEON_evaluate_model, loss_content = meon_loss(dslr_image, enhanced)
 
         loss_texture, discim_accuracy = texture_loss(enhanced, dslr_image, args.patch_width, args.patch_height, adv_)
         loss_discrim = -loss_texture
@@ -81,11 +87,13 @@ def main(args):
         # optimize parameters of image enhancement (generator) and discriminator networks
         generator_vars = [v for v in tf.global_variables() if v.name.startswith("generator")]
         discriminator_vars = [v for v in tf.global_variables() if v.name.startswith("discriminator")]
+        meon_vars = [v for v in tf.global_variables() if v.name.startswith("conv") or v.name.startswith("subtask")]
 
         train_step_gen = tf.train.AdamOptimizer(args.learning_rate).minimize(loss_generator, var_list=generator_vars)
         train_step_disc = tf.train.AdamOptimizer(args.learning_rate).minimize(loss_discrim, var_list=discriminator_vars)
 
         saver = tf.train.Saver(var_list=generator_vars, max_to_keep=100)
+        meon_saver = tf.train.Saver(var_list=meon_vars)
 
         logger.info('Initializing variables')
         sess.run(tf.global_variables_initializer())
@@ -112,6 +120,7 @@ def main(args):
                                             filename_suffix=args.exp_name)
         tf.global_variables_initializer().run()
 
+        '''load ckpt models'''
         ckpt = tf.train.get_checkpoint_state(args.checkpoint_dir)
         start_i = 0
         if ckpt and ckpt.model_checkpoint_path:
@@ -119,7 +128,9 @@ def main(args):
             saver.restore(sess, ckpt.model_checkpoint_path)
             import re
             start_i = int(re.findall("_(\d+).ckpt", ckpt.model_checkpoint_path)[0])
+        MEON_evaluate_model.initialize(sess,meon_saver,args.meod_ckpt_path)  # initialize with anohter model pretrained weights
 
+        '''start training...'''
         for i in range(start_i, args.iter_max):
 
             iter_start = time.time()
@@ -147,6 +158,13 @@ def main(args):
 
             if i % args.summary_step == 0:
                 # summary intervals
+                # enhance_f1_, enhance_f2_, enhance_s_, vgg_content_ = sess.run([enhance_f1, enhance_f2, enhance_s,vgg_content],
+                #                          feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: swaps})
+                # loss_content1_, loss_content2_, loss_content3_ = sess.run([loss_content1,loss_content2,loss_content3],
+                #                          feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: swaps})
+                # print("-----------------------------------------------")
+                # print(enhance_f1_, enhance_f2_, enhance_s_,vgg_content_,loss_content1_, loss_content2_, loss_content3_)
+                # print("-----------------------------------------------")
                 train_summary = sess.run(merge_summary,
                                          feed_dict={phone_: phone_images, dslr_: dslr_images, adv_: swaps})
                 train_writer.add_summary(train_summary, i)

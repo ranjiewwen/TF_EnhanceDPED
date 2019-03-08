@@ -36,6 +36,7 @@ def process_command_args(arguments):
     parser.add_argument('--checkpoint_dir',type=str,default=os.path.join(PROJECT_PATH,"experiments"),help='the path of ckpt file')
     parser.add_argument('--tesorboard_logs_dir',type=str,default = os.path.join(PROJECT_PATH,"experiments","logs"),help='the path of tensorboard logs')
     parser.add_argument('--pretrain_weights',type=str,default = os.path.join(PROJECT_PATH,"data","vgg_models"))
+    parser.add_argument('--meod_ckpt_path', type=str, default=os.path.join(PROJECT_PATH, "data", "weights"))
 
     ## models retated argumentss
     parser.add_argument('--save_visual_result',type=str2bool,default=True, help="whether to save visual result file ")
@@ -53,10 +54,10 @@ def process_command_args(arguments):
     parser.add_argument('--batch_size',type=int,default=32)
     parser.add_argument('--train_size',type=int,default=3000) # 3000
     parser.add_argument('--test_size',type=int,default=300)  # 300
-    parser.add_argument('--w_content',type=float,default=100)
-    parser.add_argument('--w_color',type=float,default=0.1)
-    parser.add_argument('--w_texture',type=float,default=0.2)
-    parser.add_argument('--w_tv',type=float,default=200)
+    parser.add_argument('--w_content',type=float,default=2)
+    parser.add_argument('--w_color',type=float,default=0.5)
+    parser.add_argument('--w_texture',type=float,default=2)
+    parser.add_argument('--w_tv',type=float,default=2000)
     parser.add_argument('--eval_step',type=int,default=100) #100
     parser.add_argument('--summary_step',type=int,default=2)
 
