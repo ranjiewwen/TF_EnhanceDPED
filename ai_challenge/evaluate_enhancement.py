@@ -16,6 +16,8 @@ from ai_challenge.ssim import MultiScaleSSIM
 # from exp4_8_01_unet import unet as test_model
 # model_location = "models_pretrained/iphone_iteration_55000.ckpt"
 
+# tf Model Persistence: https://blog.csdn.net/sinat_32292481/article/details/77920897
+
 model_location = "ai_challenge/models_pretrained/dped_resnet_12_64"
 
 compute_PSNR_SSIM = True
