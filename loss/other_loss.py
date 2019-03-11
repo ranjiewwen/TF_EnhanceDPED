@@ -6,8 +6,8 @@ def color_loss(enhanced, dslr_image, batch_size):
     dslr_blur=dslr_image
     enhanced_blur=enhanced
 
-    # loss_color = tf.reduce_sum(tf.pow(dslr_blur - enhanced_blur, 2)) / (2 * batch_size)
-    loss_color = tf.reduce_sum(tf.abs(dslr_blur - enhanced_blur)) / (2 * batch_size) * 0.1
+    loss_color = tf.reduce_sum(tf.pow(dslr_blur - enhanced_blur, 2)) / (2 * batch_size)
+    # loss_color = tf.reduce_sum(tf.abs(dslr_blur - enhanced_blur)) / (2 * batch_size) * 0.1
 
     return loss_color
 

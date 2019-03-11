@@ -54,9 +54,9 @@ def process_command_args(arguments):
     parser.add_argument('--batch_size',type=int,default=32)
     parser.add_argument('--train_size',type=int,default=3000) # 3000
     parser.add_argument('--test_size',type=int,default=300)  # 300
-    parser.add_argument('--w_content',type=float,default=2)
+    parser.add_argument('--w_content',type=float,default=1)
     parser.add_argument('--w_color',type=float,default=0.5)
-    parser.add_argument('--w_texture',type=float,default=2)
+    parser.add_argument('--w_texture',type=float,default=8)
     parser.add_argument('--w_tv',type=float,default=2000)
     parser.add_argument('--eval_step',type=int,default=100) #100
     parser.add_argument('--summary_step',type=int,default=2)

@@ -15,9 +15,9 @@ import numpy as np
 import tensorflow as tf
 from scipy import misc
 
-from data.load_dataset import load_test_data, load_batch
+from data.dped_dataloader import Dataloader
 from experiments.config import dped_config_20190308 as config
-from loss import color_loss, variation_loss, texture_loss, meon_loss
+from loss import color_loss, variation_loss, texture_loss,meon_loss
 from metrics import MultiScaleSSIM, PSNR
 from net import unet
 from utils.logger import setup_logger
@@ -27,27 +27,13 @@ np.random.seed(0)
 
 
 def main(args):
-    # loading training and test data
-    logger.info("Loading test data...")
-    test_data, test_answ = load_test_data(args.dataset, args.dataset_dir, args.test_size, args.patch_size)
-    logger.info("Test data was loaded\n")
-
-    logger.info("Loading training data...")
-    train_data, train_answ = load_batch(args.dataset, args.dataset_dir, args.train_size, args.patch_size)
-    logger.info("Training data was loaded\n")
-
-    TEST_SIZE = test_data.shape[0]
-    num_test_batches = int(test_data.shape[0] / args.batch_size)
 
     # defining system architecture
-    with tf.Graph().as_default(), tf.Session() as sess:
+    with tf.Graph().as_default():
 
         # placeholders for training data
-        phone_ = tf.placeholder(tf.float32, [None, args.patch_size])
-        phone_image = tf.reshape(phone_, [-1, args.patch_height, args.patch_width, 3])
-
-        dslr_ = tf.placeholder(tf.float32, [None, args.patch_size])
-        dslr_image = tf.reshape(dslr_, [-1, args.patch_height, args.patch_width, 3])
+        phone_image = tf.placeholder(tf.float32, [None, args.patch_height, args.patch_width, 3])
+        dslr_image = tf.placeholder(tf.float32, [None, args.patch_height, args.patch_width, 3])
 
         adv_ = tf.placeholder(tf.float32, [None, 1])
         enhanced = unet(phone_image)
@@ -82,16 +68,15 @@ def main(args):
         loss_psnr = PSNR(enhanced, dslr_image)
         loss_ssim = MultiScaleSSIM(enhanced, dslr_image)
 
-        loss_generator = args.w_content * loss_content + args.w_texture * loss_texture + args.w_tv * loss_tv + 1000 * (
-                    1 - loss_ssim) + args.w_color * loss_color
+        loss_generator = args.w_content * loss_content + args.w_texture * loss_texture + args.w_tv * loss_tv + 1000*(1-loss_ssim) + args.w_color * loss_color
 
         # optimize parameters of image enhancement (generator) and discriminator networks
         generator_vars = [v for v in tf.global_variables() if v.name.startswith("generator")]
         discriminator_vars = [v for v in tf.global_variables() if v.name.startswith("discriminator")]
         meon_vars = [v for v in tf.global_variables() if v.name.startswith("conv") or v.name.startswith("subtask")]
 
-        # train_step_gen = tf.train.AdamOptimizer(args.learning_rate).minimize(loss_generator, var_list=generator_vars)
-        # train_step_disc = tf.train.AdamOptimizer(args.learning_rate).minimize(loss_discrim, var_list=discriminator_vars)
+        #train_step_gen = tf.train.AdamOptimizer(args.learning_rate).minimize(loss_generator, var_list=generator_vars)
+        #train_step_disc = tf.train.AdamOptimizer(args.learning_rate).minimize(loss_discrim, var_list=discriminator_vars)
 
         train_step_gen = tf.train.AdamOptimizer(5e-5).minimize(loss_generator, var_list=generator_vars)
         train_step_disc = tf.train.AdamOptimizer(5e-5).minimize(loss_discrim, var_list=discriminator_vars)
@@ -100,12 +85,11 @@ def main(args):
         meon_saver = tf.train.Saver(var_list=meon_vars)
 
         logger.info('Initializing variables')
-        sess.run(tf.global_variables_initializer())
         logger.info('Training network')
         train_loss_gen = 0.0
         train_acc_discrim = 0.0
         all_zeros = np.reshape(np.zeros((args.batch_size, 1)), [args.batch_size, 1])
-        test_crops = test_data[np.random.randint(0, TEST_SIZE, 5), :]  # choose five images to visual
+        # test_crops = test_data[np.random.randint(0, TEST_SIZE, 5), :]
 
         # summary ,add the scalar you want to see
         tf.summary.scalar('loss_generator', loss_generator),
@@ -122,6 +106,9 @@ def main(args):
                                              filename_suffix=args.exp_name)
         test_writer = tf.summary.FileWriter(os.path.join(args.tesorboard_logs_dir, 'test', args.exp_name), sess.graph,
                                             filename_suffix=args.exp_name)
+
+    with tf.Session() as sess:
+
         tf.global_variables_initializer().run()
 
         '''load ckpt models'''
@@ -189,7 +176,8 @@ def main(args):
 
                     [enhanced_crops, accuracy_disc, losses] = sess.run([enhanced, discim_accuracy, \
                                                                         [loss_generator, loss_content, loss_color,
-                                                                         loss_texture, loss_tv, loss_psnr, loss_ssim]], \
+                                                                         loss_texture, loss_tv, loss_psnr,
+                                                                         loss_ssim]], \
                                                                        feed_dict={phone_: phone_images,
                                                                                   dslr_: dslr_images, adv_: swaps})
 
@@ -200,7 +188,8 @@ def main(args):
                             (i, args.iter_max, args.dataset, train_acc_discrim, test_accuracy_disc)
                 logs_gen = "generator losses | train: %.4g, test: %.4g | content: %.4g, color: %.4g, texture: %.4g, tv: %.4g | psnr: %.4g, ssim: %.4g\n" % \
                            (train_loss_gen, test_losses_gen[0][0], test_losses_gen[0][1], test_losses_gen[0][2],
-                            test_losses_gen[0][3], test_losses_gen[0][4], test_losses_gen[0][5], test_losses_gen[0][6])
+                            test_losses_gen[0][3], test_losses_gen[0][4], test_losses_gen[0][5],
+                            test_losses_gen[0][6])
 
                 logger.info(logs_disc)
                 logger.info(logs_gen)
@@ -218,14 +207,16 @@ def main(args):
                         before_after = np.hstack(
                             (np.reshape(test_crops[idx], [args.patch_height, args.patch_width, 3]), crop))
                         misc.imsave(
-                            os.path.join(args.checkpoint_dir, str(args.dataset) + str(idx) + '_iteration_' + str(i) +
+                            os.path.join(args.checkpoint_dir,
+                                         str(args.dataset) + str(idx) + '_iteration_' + str(i) +
                                          '.jpg'), before_after)
                         idx += 1
 
                 # save the model that corresponds to the current iteration
                 if args.save_ckpt_file:
                     saver.save(sess,
-                               os.path.join(args.checkpoint_dir, str(args.dataset) + '_iteration_' + str(i) + '.ckpt'),
+                               os.path.join(args.checkpoint_dir,
+                                            str(args.dataset) + '_iteration_' + str(i) + '.ckpt'),
                                write_meta_graph=False)
 
                 train_loss_gen = 0.0
@@ -235,16 +226,12 @@ def main(args):
                 del train_answ
                 del test_data
                 del test_answ
-                test_data, test_answ = load_test_data(args.dataset, args.dataset_dir, args.test_size, args.patch_size)
-                train_data, train_answ = load_batch(args.dataset, args.dataset_dir, args.train_size, args.patch_size)
+                test_data, test_answ = load_test_data(args.dataset, args.dataset_dir, args.test_size,
+                                                      args.patch_size)
+                train_data, train_answ = load_batch(args.dataset, args.dataset_dir, args.train_size,
+                                                    args.patch_size)
 
-                # logger.info('current eval_step:{}/{}, take train time is :{}min'.format(i, args.eval_step, float(
-                #     time.time() - iter_start) / 60))
 
-            # if KeyboardInterrupt:
-            #     saver.save(sess,
-            #                os.path.join(args.checkpoint_dir, str(args.dataset) + '_iteration_' + str(i) + '.ckpt'),
-            #                write_meta_graph=False)
 
 
 if __name__ == '__main__':

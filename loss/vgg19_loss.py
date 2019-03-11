@@ -5,7 +5,8 @@
 # @File    : vgg19_loss.py
 
 # reference: https://github.com/hyeongyuy/CT-WGAN_VGG_tensorflow/blob/master/WGAN_VGG/code/wgan_vgg_model.py
-#            https://github.com/zoharli/SRGAN-tensorflow/blob/master/vgg19.py
+#            https://github.com/zoharli/SRGAN-tensorflow/blob/master/vgg19.py (slim)
+#            https://github.com/brade31919/SRGAN-tensorflow/blob/master/lib/model.py
 
 import os
 import tensorflow as tf
