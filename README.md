@@ -5,7 +5,7 @@
 
 - Seconde reimplementation [Range Scaling Global U-Net for Perceptual Image Enhancement on Mobile Devices](http://openaccess.thecvf.com/content_ECCVW_2018/papers/11133/Huang_Range_Scaling_Global_U-Net_for_Perceptual_Image_Enhancement_on_Mobile_ECCVW_2018_paper.pdf). Join the PRIM2018 Challenge on Perceptual Image Enhancement on Smartphones (Track B: Image Enhancement) http://ai-benchmark.com/challenge.html#challenge . which is champion plan. it modify the generate network and loss to make the image enhancement result better. 
 
-- Third i will add image quality assessment model to guide image enhancement. use iqa model extract generate image loss(Subjective representation loss and Subjective score loss),which will make the generated image more in line with the subjective perception of the human eye.
+- Third i will add image quality assessment model to guide image enhancement. use iqa model extract generate image loss(Subjective representation loss and Subjective score loss),which will make the generated image more in line with the subjective perception of the human eye. There i ues [end-to-end optimized deep neural network (MEON)](https://ece.uwaterloo.ca/~zduanmu/tip2018biqa/) this models.
 
 ### Prerequisites
 
@@ -81,9 +81,11 @@
 
 ### some useful paper
 - Range Scaling Global U-Net for Perceptual Image Enhancement on Mobile Devices,Jie Huang, Pengfei Zhu, Mingrui Geng, Jiewen Ran, Xingguang Zhou, Chen Xing, Pengfei Wan, Xiangyang Ji.
+- TALEBI H, MILANFAR P. NIMA: Neural Image Assessment[J]. IEEE Transactions on Image Processing, 2018,27(8):3998-4011.
 - TALEBI H, MILANFAR P. Learned perceptual image enhancement, 2018[C]. IEEE, 2018
 - CHOI J, KIM J, CHEON M, et al. Deep Learning-based Image Super-Resolution Considering Quantitative and Perceptual Quality[J]. 2018.
 - HUA W, XIA Y. Low-Light Image Enhancement Based on Joint Generative Adversarial Network and Image Quality Assessment, 2018[C]. IEEE, 2018.
+- End-to-End Blind Image Quality Assessment Using Deep Neural Networks .Kede Ma, Wentao Liu, Kai Zhang, Zhengfang Duanmu, Zhou Wang, and Wangmeng Zuo.IEEE Transactions on Image Processing (TIP), vol. 27, no. 3, pp. 1202-1213, Mar. 2018.
 
 ### Thanks
 
