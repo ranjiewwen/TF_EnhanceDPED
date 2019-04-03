@@ -1,8 +1,10 @@
 ## TF_EnhanceDPED project
 
 - Tensorflow implement of image enhancement base on dped.
-- First reimplementation of ICCV 2017 paper "[DSLR-Quality Photos on Mobile Devices with Deep Convolutional Networks](https://arxiv.org/pdf/1704.02470.pdf)" .
+- First reimplementation of ICCV 2017 paper "[DSLR-Quality Photos on Mobile Devices with Deep Convolutional Networks](https://arxiv.org/pdf/1704.02470.pdf)".
+
 - Seconde reimplementation [Range Scaling Global U-Net for Perceptual Image Enhancement on Mobile Devices](http://openaccess.thecvf.com/content_ECCVW_2018/papers/11133/Huang_Range_Scaling_Global_U-Net_for_Perceptual_Image_Enhancement_on_Mobile_ECCVW_2018_paper.pdf). Join the PRIM2018 Challenge on Perceptual Image Enhancement on Smartphones (Track B: Image Enhancement) http://ai-benchmark.com/challenge.html#challenge . which is champion plan. it modify the generate network and loss to make the image enhancement result better. 
+
 - Third i will add image quality assessment model to guide image enhancement. use iqa model extract generate image loss(Subjective representation loss and Subjective score loss),which will make the generated image more in line with the subjective perception of the human eye.
 
 ### Prerequisites
@@ -77,11 +79,14 @@
 - So each training load the data is very slow, next step will optimization. 
 - Will use Moving average loss.
 
-### Thanks and paper
-
-- 2019/01/02 init the repository.
-- Thanks offical code [DPED](https://github.com/aiff22/DPED) !
+### some useful paper
 - Range Scaling Global U-Net for Perceptual Image Enhancement on Mobile Devices,Jie Huang, Pengfei Zhu, Mingrui Geng, Jiewen Ran, Xingguang Zhou, Chen Xing, Pengfei Wan, Xiangyang Ji.
 - TALEBI H, MILANFAR P. Learned perceptual image enhancement, 2018[C]. IEEE, 2018
 - CHOI J, KIM J, CHEON M, et al. Deep Learning-based Image Super-Resolution Considering Quantitative and Perceptual Quality[J]. 2018.
 - HUA W, XIA Y. Low-Light Image Enhancement Based on Joint Generative Adversarial Network and Image Quality Assessment, 2018[C]. IEEE, 2018.
+
+### Thanks
+
+- 2019/01/02 init the repository.
+- Thanks offical code [DPED](https://github.com/aiff22/DPED)!
+- [tf-perceptual-eusr](https://github.com/idearibosome/tf-perceptual-eusr)
